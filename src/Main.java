@@ -33,33 +33,19 @@ class Node {
 public class Main {
 	final static String input = "C:\\Users\\butam\\workspace\\MapReduce\\in.txt";
 	final static String output = "C:\\Users\\butam\\workspace\\MapReduce\\out.txt";
+	final static String answer = "C:\\Users\\butam\\workspace\\MapReduce\\ans.txt";
 	final static String locationMap = "C:\\Users\\butam\\OneDrive\\Документы\\Visual Studio 2015\\Projects\\MapScript\\Debug\\MapScript.exe";
-	final static String locationDeruce = "F:\\УП c++\\reduce\\Debug\\";	
-	static void reduce(ArrayList<Node> store) {
-		String[] words = null;
-		long sum = 0;
-		for(int i = 0; i < store.size(); i++) {
-			words = store.get(i).getWeight().split(" ");
-			for (int j = 0; j < words.length; j++) {
-				sum += Integer.parseInt(words[j]);
-			}
-			store.get(i).setWeight(Long.toString(sum));
-			sum = 0;
-		}
-	}
+	final static String locationReduce = "C:\\Users\\butam\\OneDrive\\Документы\\Visual Studio 2015\\Projects\\ReduceScript\\Debug\\ReduceScript.exe";
 	public static void main(String[] args) throws IOException{
-		ProcessBuilder bd = new ProcessBuilder(locationMap);
-		bd.redirectInput(new File (input));
-		bd.redirectOutput(new File(output));
-        Process process = bd.start();
+		ProcessBuilder pb_map = new ProcessBuilder(locationMap);
+		pb_map.redirectInput(new File (input));
+		pb_map.redirectOutput(new File(output));
+        Process proc_map = pb_map.start();
         try { 
-        	process.waitFor(); 
-        	} catch (InterruptedException e) { 
-        	// TODO Auto-generated catch block 
-        	e.printStackTrace(); 
-        	}
+        	proc_map.waitFor(); 
+        } catch (InterruptedException e) {e.printStackTrace();}
 		ArrayList<Node> store = new ArrayList<>();
-		String[] words = null;
+		String[] words;
 		String str;
 		File in = new File(output);
 		try{
@@ -75,28 +61,20 @@ public class Main {
 				return o1.getKey().compareTo(o2.getKey());
 			}
 		});
-		ArrayList<Node> store2 = new ArrayList<>();
-		boolean word = true;
-		int k = 0;
-		for(int i = 0; i < store.size(); i++) {
-			if (word == true) {
-				store2.add(new Node(store.get(i).getKey(), "1"));
-				word = false;
-			}
-			if (i != store.size() - 1 && store.get(i).getKey().equals(store.get(i + 1).getKey())) {
-				store2.get(k).setWeight(store2.get(k).getWeight() + " 1");
-			} else {
-				k++;
-				word = true;
-			}
-		}
 		File out = new File(output);
 		try {
 			PrintWriter writer = new PrintWriter(out.getAbsoluteFile());
-			for (int i = 0; i < store2.size(); i++) {
-			    writer.println(store2.get(i).getKey() + " " + store2.get(i).getWeight());
+			for (int i = 0; i < store.size(); i++) {
+			    writer.println(store.get(i).getKey() + "\t" + store.get(i).getWeight());
 			}
 			writer.close();
 		} catch (FileNotFoundException e) { }
+		ProcessBuilder pb_reduce = new ProcessBuilder(locationReduce);
+		pb_reduce.redirectInput(new File (output));
+		pb_reduce.redirectOutput(new File(answer));
+        Process proc_reduce = pb_reduce.start();
+        try { 
+        	proc_reduce.waitFor(); 
+        } catch (InterruptedException e) {e.printStackTrace();}
 	}
 }
